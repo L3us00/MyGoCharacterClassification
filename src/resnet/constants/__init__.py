@@ -14,3 +14,4 @@ DATACLASS = {
     9:"nyamuchi",
     10:"other"
 }
+DATASET_LABEL_PATH = os.path.join("assets", "dataset", "label.csv")
