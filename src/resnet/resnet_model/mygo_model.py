@@ -1,30 +1,13 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchmetrics import Accuracy, MeanSquaredError
-
-EPSILON = 0.1
-MOMENTUM = 0.1
-class Bottleneck(nn.Module):
-    def __init__(self,in_channels, out_channels, kernel_size = 3, stride = 1):
-        super(Bottleneck, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=in_channels, kernel_size=kernel_size, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(num_features=in_channels, eps=EPSILON, momentum=MOMENTUM, track_running_stats=True)
-        self.conv2 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=3, padding=1, stride = stride, bias=False)
-        self.bn2 = nn.BatchNorm2d(num_features=out_channels, eps=EPSILON, momentum=MOMENTUM, track_running_stats=True)
-        self.relu = nn.ReLU()
-
-    def forward(self,x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.conv2(x)
-        x = self.bn2(x)
-        x = self.relu(x)
-        
-        return x
+from ..constants import EPSILON, MOMENTUM
+from .bottleneck import Bottleneck
     
-class ResNet(nn.Module):
+
+class ResNet50(nn.Module):
     def __init__(self, input_channel=3, learning_rate=0.01):
-        super(ResNet, self).__init__()
+        super(ResNet50, self).__init__()
         self.conv_block_0 = nn.Sequential(
             nn.Conv2d(in_channels=input_channel,
                       out_channels=64,
@@ -41,8 +24,8 @@ class ResNet(nn.Module):
         self.bottleneck_3 = Bottleneck(64,64, stride=2)
         self.residual_3 = nn.Conv2d(in_channels=64,out_channels=64, kernel_size=1, stride=2, bias=False)
         self.res_bn_3 = nn.BatchNorm2d(num_features=64,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
-        self.bottleneck_4 = Bottleneck(64,128)
-        self.residual_4 = nn.Conv2d(in_channels=64,out_channels=128, kernel_size=1, bias=False)
+        self.bottleneck_4 = Bottleneck(64,128, stride=2)
+        self.residual_4 = nn.Conv2d(in_channels=64,out_channels=128, kernel_size=1, stride=2, bias=False)
         self.res_bn_4 = nn.BatchNorm2d(num_features=128,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
         self.bottleneck_5 = Bottleneck(128,128)
         self.bottleneck_6 = Bottleneck(128,128)
@@ -158,5 +141,5 @@ class ResNet(nn.Module):
 
         x = self.global_avg_layer(x).squeeze()
         x = self.fc(x)
-        
+        x = F.softmax(x, dim=1)
         return x

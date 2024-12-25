@@ -15,3 +15,5 @@ DATACLASS = {
     10:"other"
 }
 DATASET_LABEL_PATH = os.path.join("assets", "dataset", "label.csv")
+EPSILON = 0.1
+MOMENTUM = 0.1
