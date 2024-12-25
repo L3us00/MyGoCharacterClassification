@@ -22,15 +22,15 @@ class ResNet50(nn.Module):
         self.bottleneck_1 = Bottleneck(64,64)
         self.bottleneck_2 = Bottleneck(64,64)
         self.bottleneck_3 = Bottleneck(64,64, stride=2)
-        self.residual_3 = nn.Conv2d(in_channels=64,out_channels=64, kernel_size=1, stride=2, bias=False)
+        self.residual_3 = nn.Conv2d(in_channels=64,out_channels=64, kernel_size=3, stride=2, bias=False, padding=1)
         self.res_bn_3 = nn.BatchNorm2d(num_features=64,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
-        self.bottleneck_4 = Bottleneck(64,128, stride=2)
-        self.residual_4 = nn.Conv2d(in_channels=64,out_channels=128, kernel_size=1, stride=2, bias=False)
+        self.bottleneck_4 = Bottleneck(64,128, stride=1)
+        self.residual_4 = nn.Conv2d(in_channels=64,out_channels=128, kernel_size=3, stride=1, bias=False, padding=1)
         self.res_bn_4 = nn.BatchNorm2d(num_features=128,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
         self.bottleneck_5 = Bottleneck(128,128)
         self.bottleneck_6 = Bottleneck(128,128)
         self.bottleneck_7 = Bottleneck(128,128,stride=2)
-        self.residual_7 = nn.Conv2d(in_channels=128,out_channels=128, kernel_size=1, stride=2, bias=False)
+        self.residual_7 = nn.Conv2d(in_channels=128,out_channels=128, kernel_size=3, stride=2, bias=False, padding=1)
         self.res_bn_7 = nn.BatchNorm2d(num_features=128,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
         self.bottleneck_8 = nn.Sequential(
             nn.Conv2d(in_channels=128,
@@ -52,26 +52,27 @@ class ResNet50(nn.Module):
                            track_running_stats=True),
             nn.ReLU()
         )
-        self.residual_8 = nn.Conv2d(in_channels=128,out_channels=256, kernel_size=1, bias=False)
+        self.residual_8 = nn.Conv2d(in_channels=128,out_channels=256, kernel_size=3, bias=False, padding=1)
         self.res_bn_8 = nn.BatchNorm2d(num_features=256,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
         self.bottleneck_9 = Bottleneck(256,256)
         self.bottleneck_10 = Bottleneck(256,256)
         self.bottleneck_11 = Bottleneck(256,256)
         self.bottleneck_12 = Bottleneck(256,256)
         self.bottleneck_13 = Bottleneck(256,256,stride=2)
-        self.residual_13 = nn.Conv2d(in_channels=256,out_channels=256, kernel_size=1, stride=2, bias=False)
+        self.residual_13 = nn.Conv2d(in_channels=256,out_channels=256, kernel_size=3, stride=2, bias=False, padding=1)
         self.res_bn_13 = nn.BatchNorm2d(num_features=256,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
         self.bottleneck_14 = Bottleneck(256,512)
-        self.residual_14 = nn.Conv2d(in_channels=256,out_channels=512, kernel_size=1, bias=False)
+        self.residual_14 = nn.Conv2d(in_channels=256,out_channels=512, kernel_size=3, bias=False, padding=1)
         self.res_bn_14 = nn.BatchNorm2d(num_features=512,eps=EPSILON,momentum=MOMENTUM,track_running_stats=True)
         self.bottleneck_15 = Bottleneck(512,512)
-        self.bottleneck_16 = Bottleneck(512,512, stride=2)
-        self.residual_16 = nn.Conv2d(in_channels=512,out_channels=512, kernel_size=1, stride=2, bias=False)
-        self.global_avg_layer = nn.AvgPool2d(kernel_size=2)
+        self.bottleneck_16 = Bottleneck(512,512, stride=1)
+        self.residual_16 = nn.Conv2d(in_channels=512,out_channels=512, kernel_size=3, stride=1, bias=False, padding=1)
+        self.global_avg_layer = nn.AvgPool2d(kernel_size=7)
         self.fc = nn.Sequential(
             nn.Linear(in_features=512,out_features=256),
             nn.ReLU(),
-            nn.Linear(in_features=256,out_features=1)
+            nn.Linear(in_features=256,out_features=128), 
+            nn.Linear(in_features=128,out_features=11)
         )
         self.criterion = nn.MSELoss()
         self.learning_rate = learning_rate
@@ -141,5 +142,5 @@ class ResNet50(nn.Module):
 
         x = self.global_avg_layer(x).squeeze()
         x = self.fc(x)
-        x = F.softmax(x, dim=1)
+
         return x
