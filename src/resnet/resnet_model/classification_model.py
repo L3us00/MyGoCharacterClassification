@@ -6,17 +6,17 @@ from ..constants import DEVICE, TRAIN_CONFIG
 
 
 class ClassificationModel:
-    def __init__(self, pretrained=True):
+    def __init__(self, classification_class: int, pretrained=True):
         self.model = models.resnet50(pretrained=pretrained)
-        self.model.fc = nn.Linear(self.model.fc.in_features, TRAIN_CONFIG["classification_class"])
+        self.model.fc = nn.Linear(self.model.fc.in_features, classification_class)
         self.model.to(DEVICE)
     
-    def train(self, train_loader: DataLoader, val_loader: DataLoader):
+    def train(self, train_loader: DataLoader, val_loader: DataLoader, lr: float, epochs: int, save_path: str):
         loss_fn = nn.CrossEntropyLoss()
-        optimizer = torch.optim.AdamW(self.model.parameters(), lr=float(TRAIN_CONFIG["lr"]))
+        optimizer = torch.optim.AdamW(self.model.parameters(), lr=lr)
         
-        for epoch in range(TRAIN_CONFIG["epochs"]):
-            print(f"Epoch {epoch + 1}/{TRAIN_CONFIG["epochs"]}")
+        for epoch in range(epochs):
+            print(f"Epoch {epoch + 1}/{epochs}")
             self.model.train()
             train_loss = 0
             train_acc = 0
@@ -40,7 +40,7 @@ class ClassificationModel:
             train_acc /= len(train_loader)
             print(f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_acc:.4f}")
             self.evaluate(val_loader)
-        torch.save(self.model.state_dict(), TRAIN_CONFIG["model_path"])
+        torch.save(self.model.state_dict(), save_path)
 
     def evaluate(self, val_loader: DataLoader):
         self.model.eval()
