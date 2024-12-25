@@ -66,7 +66,7 @@ class ClassificationModel:
         self.model.to(DEVICE)
 
     def predict(self, img_tensor: torch.Tensor):
-        img_tensor = img_tensor.unsqueeze(0).to(DEVICE)
+        img_tensor = img_tensor.to(DEVICE)
         self.model.eval()
         with torch.no_grad():
             output = self.model(img_tensor)
