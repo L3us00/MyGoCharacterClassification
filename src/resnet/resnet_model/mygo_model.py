@@ -6,7 +6,7 @@ from .bottleneck import Bottleneck
     
 
 class ResNet50(nn.Module):
-    def __init__(self, input_channel=3, learning_rate=0.01):
+    def __init__(self, input_channel=3):
         super(ResNet50, self).__init__()
         self.conv_block_0 = nn.Sequential(
             nn.Conv2d(in_channels=input_channel,
@@ -74,8 +74,7 @@ class ResNet50(nn.Module):
             nn.Linear(in_features=256,out_features=128), 
             nn.Linear(in_features=128,out_features=11)
         )
-        self.criterion = nn.MSELoss()
-        self.learning_rate = learning_rate
+
 
     def forward(self,x):
         x = self.conv_block_0(x)

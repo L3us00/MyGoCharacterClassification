@@ -21,5 +21,4 @@ class CustomImageDataset(Dataset):
         image = Image.fromarray(image)
         if self.transform:
             image = self.transform(image)
-        print(type(image))
         return image, label
