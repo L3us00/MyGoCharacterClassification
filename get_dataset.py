@@ -1,4 +1,6 @@
-import src.resnet.utils as utils
+from src.resnet.utils.modify_dataset import get_dataset
+from src.resnet.utils.label_to_csv import to_csv
 
-data = utils.get_dataset(400)
-utils.to_csv(data)
+
+data = get_dataset(100)
+to_csv(data)

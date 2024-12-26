@@ -5,3 +5,4 @@ __pycache__/
 
 
 assets/dataset/*/*.jpg
+assets/model/*.pt
