@@ -11,6 +11,6 @@ def train():
     model_resnet = ClassificationModel(TRAIN_CONFIG["classification_class"])
     model_resnet.train(train_loader=train_loader,
                        val_loader=val_loader,
-                       lr=TRAIN_CONFIG["lr"],
+                       lr=float(TRAIN_CONFIG["lr"]),
                        epochs=TRAIN_CONFIG["epochs"],
                        save_path=TRAIN_CONFIG["model_path"])
