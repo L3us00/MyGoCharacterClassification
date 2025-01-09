@@ -67,13 +67,15 @@ class ResNet50(nn.Module):
         self.bottleneck_15 = Bottleneck(512,512)
         self.bottleneck_16 = Bottleneck(512, 2048, stride=1)
         self.residual_16 = nn.Conv2d(in_channels=512,out_channels=2048, kernel_size=3, stride=1, bias=False, padding=1)
-        self.global_avg_layer = nn.AvgPool2d(kernel_size=7)
+        self.global_avg_layer = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Sequential(
             nn.Linear(in_features=2048,out_features=1000),
             nn.ReLU(),
-            nn.Linear(in_features=1000,out_features=200), 
-            nn.ReLU(),
-            nn.Linear(in_features=200,out_features=11)
+            nn.Linear(in_features=1000,out_features=11), 
+            # nn.ReLU(),
+            # nn.Linear(in_features=512,out_features=128), 
+            # nn.ReLU(),
+            # nn.Linear(in_features=128,out_features=11)
         )
 
 
@@ -140,7 +142,8 @@ class ResNet50(nn.Module):
         x = self.residual_16(x)
         x = x + temp
 
-        x = self.global_avg_layer(x).squeeze()
+        x = self.global_avg_layer(x)
+        x = torch.flatten(x, 1)
         x = self.fc(x)
 
         return x
