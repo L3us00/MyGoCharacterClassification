@@ -2,13 +2,14 @@ import matplotlib.pyplot as plt
 import torch
 from src.resnet.constants import TRAIN_CONFIG, DEVICE, DATACLASS
 from src.resnet.resnet_model.classification_model import ClassificationModel
+from src.resnet.resnet_model.mygo_model import ResNet50
 from src.resnet.utils.get_dataloader import get_dataloader
 import numpy as np
 
 def plot_classification_results(model, data_loader, device, num_images=9):
 
     # Set up a 3x3 grid plot
-    fig, axes = plt.subplots(3, 3, figsize=(12, 12))
+    _, axes = plt.subplots(3, 3, figsize=(12, 12))
     axes = axes.flatten()
 
     # Get a batch of images and labels
@@ -43,7 +44,11 @@ if __name__ == '__main__':
 
 
     train_loader, val_loader = get_dataloader()
-    model_resnet = ClassificationModel(TRAIN_CONFIG["classification_class"],False)
-    model_resnet.load(TRAIN_CONFIG["model_path"])
+    # model_resnet = ClassificationModel(TRAIN_CONFIG["classification_class"],False)
+    model_resnet = ResNet50()
+    model_resnet.load_state_dict(torch.load("temp.pth"))
+    model_resnet = model_resnet.to(DEVICE)
+    model_resnet.eval()
+    # model_resnet.load(TRAIN_CONFIG["model_path"])
 
     plot_classification_results(model_resnet,data_loader=val_loader,device=DEVICE)
