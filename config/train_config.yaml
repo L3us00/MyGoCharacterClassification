@@ -1,5 +1,5 @@
 classification_class: 11
-lr: 0.0001
+lr: 1e-4
 eps: 0.0001
 momentum: 0.1
 epochs: 10
